@@ -1,6 +1,3 @@
-import { config } from 'dotenv';
-config();
-
 import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.PUBLIC_ANON_URL;
 const supabaseAnonKey = import.meta.env.PUBLIC_ANON_KEY;
