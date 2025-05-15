@@ -18,12 +18,15 @@ export const load: PageServerLoad = async ({ params }) => {
 
 import type { EntryGenerator } from './$types';
 
-export const entries: EntryGenerator = () => {
-	return [
-        { slug: 'Arm' },
-        { slug: 'Leg' },
-        { slug: 'Group Test' },
-	];
+export const entries: EntryGenerator = async () => {
+    const { data: boxes, error } = await supabase
+        .from("boxes")
+        .select("name");
+    if (error) {
+        console.error("Supabase error (entries):", error);
+        return [];
+    }
+    return (boxes || []).map(box => ({ slug: box.name }));
 };
 
 export const prerender = true;
