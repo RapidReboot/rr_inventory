@@ -23,12 +23,9 @@
 			return;
 		}
 
-		if (!session) {
-			if ($page.url.pathname !== `${base}/login`) {
-				console.log("No session, redirecting to login...");
+		if (!session && !isBoxPage && !isLoginPage && isHomePage) {
 				window.location.replace(`${base}/login`);
 				return;
-			}
 		}
 
 		const {
@@ -70,6 +67,10 @@
 
 	$: isWarehousePage = $page.url.pathname === `${base}/warehouse`;
 	$: isSupplierPage = $page.url.pathname === `${base}/supplier`;
+	$: isBoxPage = $page.url.pathname.startsWith(`${base}/warehouse/boxes`);
+	$: isHomePage = $page.url.pathname.startsWith(`${base}`);
+
+
 
 	$: $page.data.user && user.set($page.data.user);
 
@@ -140,7 +141,7 @@
 		</div>
 	{/if}
 
-	{#if $isAdmin && !isLoginPage && !isWarehousePage && !isSupplierPage}
+	{#if $isAdmin && !isLoginPage && !isWarehousePage && !isSupplierPage && !isBoxPage}
 	<slot />
 	{/if}
 
@@ -149,12 +150,15 @@
 	{/if}
 
 	
-	{#if isWarehousePage && $isWarehouse && !isLoginPage}
+	{#if isWarehousePage && $isWarehouse}
 		<slot />
 	{/if}
 
-		
-	{#if isSupplierPage && $isSupplier && !isLoginPage}
+	{#if isBoxPage}
+		<slot />
+	{/if}
+
+	{#if isSupplierPage && $isSupplier}
 		<slot />
 	{/if}
 </main>

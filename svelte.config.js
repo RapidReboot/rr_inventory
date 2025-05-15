@@ -12,7 +12,7 @@ const config = {
 		}),
 
     paths: {
-      base: '/rr_inventory', // important for GitHub Pages
+      base: '/rr_inventory',
     }
   }
 };
