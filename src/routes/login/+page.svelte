@@ -43,11 +43,11 @@
         if (isWarehouse && isSupplier) {
             window.location.href = `${base}`;
         } else if (isWarehouse) {
-            window.location.href = '/warehouse';
+            window.location.href = `${base}/warehouse`;
         } else if (isSupplier) {
-            window.location.href = '/supplier';
+            window.location.href = `${base}/supplier`;
         } else {
-            window.location.href = '/invalid';
+            window.location.href = `${base}/invalid`;
         }
     }
 </script>
