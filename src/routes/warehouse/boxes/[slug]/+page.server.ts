@@ -1,6 +1,5 @@
 import { supabase } from "$lib/supabase";
 import type { PageServerLoad } from './$types';
-export const prerender = false;
 
 export const load: PageServerLoad = async ({ params }) => {
   const { slug } = params;
@@ -16,3 +15,15 @@ export const load: PageServerLoad = async ({ params }) => {
 
   return { box };
 };
+
+import type { EntryGenerator } from './$types';
+
+export const entries: EntryGenerator = () => {
+	return [
+        { slug: 'Arm' },
+        { slug: 'Leg' },
+        { slug: 'Group Test' },
+	];
+};
+
+export const prerender = true;
