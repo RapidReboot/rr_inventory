@@ -7,5 +7,5 @@ export async function load() {
     console.error("Supabase error:", error);
   }
 
-  return { suppliers: table ?? [] };
+  return { table: table ?? [] };
 }

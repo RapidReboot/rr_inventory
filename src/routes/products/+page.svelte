@@ -1,8 +1,12 @@
 <script lang="ts">
-    import { supabase } from '$lib/supabase';
-	import { goto } from '$app/navigation';
+
+	import { supabase } from '$lib/supabase';
+
 
 	export let data: { products: { id: number; name: string; on_hand: number, image: string, description: string, weight: number, needed: number, group_products: string[] }[] };
+	let canvas: HTMLCanvasElement;
+	let showDeleteConfirmation = false;
+    let productToDelete: number | null = null;
 
     async function updateProduct(id: number, updatedFields: { name?: string; on_hand?: number; image?: string; description?: string; weight?: number, needed?: number, group_products?: string[] }) {
         if (updatedFields.image && !updatedFields.image.startsWith('http')) {
@@ -86,9 +90,6 @@
 		data.products = updatedProducts.filter(product => product.id !== id);
 	}
 
-	let showDeleteConfirmation = false;
-    let productToDelete: number | null = null;
-
     function confirmDelete(id: number) {
         showDeleteConfirmation = true;
         productToDelete = id;
@@ -106,7 +107,6 @@
             productToDelete = null;
         }
     }
-
 
     function addToGroupProducts(product: { id: number; group_products: string[] }, selectedProduct: string) {
         if (!product.group_products.includes(selectedProduct)) {
@@ -163,7 +163,7 @@
         return;
     }
     boxes = boxes.filter(box => box.id !== id);
-}
+	}
 
 	// Fetch accounts on component load
 	fetchProducts();
@@ -203,35 +203,45 @@
 		{#if showBoxes}
 			<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6">
 				{#each boxes as box (box.id)}
-					<div class="bg-gradient-to-br from-green-400 via-green-500 to-green-600 text-white rounded-2xl shadow-xl border-2 border-green-700 p-8 flex flex-col items-center transition-transform duration-200 hover:scale-105 hover:shadow-2xl relative">
-						<label class="text-lg font-semibold mb-1" for="box-name-{box.id}">Name</label>
+					<div class="border rounded p-4 shadow-md bg-gray-100">
+					<div class="grid grid-cols-12 gap-4 mb-6">
+						<!-- Name Field (takes up 9 of 12 columns) -->
+						<div class="col-span-9">
+						<label class="text-lg font-semibold mb-1 block" for="box-name-{box.id}">Name</label>
 						<select
 							id="box-name-{box.id}"
-							class="text-green-900 rounded-lg p-2 mb-4 w-full text-center bg-white focus:ring-2 focus:ring-green-300 border border-green-300 shadow-sm transition"
+							class="text-green-900 rounded-lg p-2 w-full text-center bg-white focus:ring-2 focus:ring-green-300 border border-green-300 shadow-sm transition"
 							bind:value={box.name}
 							on:change={(e) => {
-                                const target = e.target as HTMLSelectElement | null;
-                                if (target) updateBox(box.id, { name: target.value });
-                            }}
+							const target = e.target as HTMLSelectElement | null;
+							if (target) updateBox(box.id, { name: target.value });
+							}}
 						>
 							{#each data.products as product}
-								<option value={product.name}>{product.name}</option>
+							<option value={product.name}>{product.name}</option>
 							{/each}
 						</select>
-						<label class="text-lg font-semibold mb-1" for="box-count-{box.id}">Count</label>
+						</div>
+
+						<!-- Count Field (takes up 3 of 12 columns) -->
+						<div class="col-span-3">
+						<label class="text-lg font-semibold mb-1 block" for="box-count-{box.id}">Count</label>
 						<input
 							id="box-count-{box.id}"
-							class="text-green-900 rounded-lg p-2 mb-2 w-full text-center bg-white focus:ring-2 focus:ring-green-300 border border-green-300 shadow-sm transition"
-							type="number"
+							class="text-green-900 rounded-lg p-2 w-full text-center bg-white focus:ring-2 focus:ring-green-300 border border-green-300 shadow-sm transition"
 							bind:value={box.count}
 							on:change={() => updateBox(box.id, { count: box.count })}
 						/>
-						<button
-							class="mt-4 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded shadow"
-							on:click={() => deleteBox(box.id)}
-						>
-							Delete Box
-						</button>
+						</div>
+					</div>
+
+					<!-- Delete Button -->
+					<button
+						class="mt-4 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded shadow"
+						on:click={() => deleteBox(box.id)}
+					>
+						Delete Box
+					</button>
 					</div>
 				{/each}
 			</div>
@@ -274,7 +284,7 @@
 									<input
 										id="on-hand-{product.id}"
 										type="number"
-										class="border p-1"
+										class="border flex-1 w-full p-1"
 										bind:value={product.on_hand}
 										on:change={() => updateProduct(product.id, { on_hand: product.on_hand })}
 										placeholder="On Hand"
@@ -288,7 +298,7 @@
 								<input
 									id="needed-{product.id}"
 									type="number"
-									class="border p-1"
+									class="border p-1 flex-1 w-full"
 									bind:value={product.needed}
 									on:change={() => updateProduct(product.id, { needed: product.needed })}
 									placeholder="needed"
@@ -307,7 +317,7 @@
 							></textarea>
 
 							<label for="group-products-{product.id}" class="text-sm font-semibold">Group Products</label>
-							<div class="flex gap-2 items-center">
+							<div class="flex gap-2">
 								<select
 									class="border p-1"
 									on:change={(e) => {
@@ -333,23 +343,23 @@
 										{/if}
 									{/each}
 								</select>
-								<input
-									id="group-products-{product.id}"
-									type="text"
-									class="border p-1 flex-1"
-									value={product.group_products.filter(item => item.trim() !== "").join(", ")}
-									readonly
-									placeholder="Comma-separated product names"
-								/>
+				<input
+			id="group-products-{product.id}"
+			type="text"
+			class="border p-1 w-full"
+			value={product.group_products.filter(item => item.trim() !== "").join(", ")}
+			readonly
+			placeholder="products"
+		/>
 							</div>
 
 							<div class="flex gap-2">
-								<div class="flex-1 flex flex-col justify-center">
+								<div class="flex-col justify-center">
 									<label for="weight-{product.id}" class="text-sm font-semibold">Weight</label>
 									<input
 										id="weight-{product.id}"
 										type="number"
-										class="border p-1"
+										class="border p-1 flex-1 w-full"
 										bind:value={product.weight}
 										on:change={() => updateProduct(product.id, { weight: product.weight })}
 										placeholder="Weight"
@@ -357,7 +367,7 @@
 								</div>
 								
 								<button
-									class="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-2 rounded flex-1"
+									class="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-2 rounded flex-1 w-full"
 									on:click={() => confirmDelete(product.id)}
 								>
 									Delete

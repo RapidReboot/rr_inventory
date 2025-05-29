@@ -4,7 +4,7 @@
 	import '../app.css';
 	import { page } from '$app/stores';
 	import { writable } from 'svelte/store';
-    import { supabase } from '$lib/supabase';
+	import { supabase } from '$lib/supabase';
 	import type { User } from '@supabase/supabase-js';
 
 	let user = writable<User | null>(null);
@@ -23,7 +23,7 @@
 			return;
 		}
 
-		if (!session && !isBoxPage && !isLoginPage && isHomePage) {
+		if (!session && !isBoxPage && !isLoginPage && isHomePage && !isSupplierPage) {
 				window.location.replace(`${base}/login`);
 				return;
 		}
@@ -64,10 +64,12 @@
 
 	$: isLoginPage = $page.url.pathname === `${base}/login`;
 	$: isInvalidPage = $page.url.pathname === `${base}/invalid`;
+	$: isBoxPage = $page.url.pathname.startsWith(`${base}/warehouse/boxes/`);
 
 	$: isWarehousePage = $page.url.pathname === `${base}/warehouse`;
-	$: isSupplierPage = $page.url.pathname === `${base}/supplier`;
-	$: isBoxPage = $page.url.pathname.startsWith(`${base}/warehouse/boxes`);
+	$: isSuppliersPage = $page.url.pathname === `${base}/suppliers`;
+	$: isSupplierPage = $page.url.pathname.startsWith(`${base}/supplier/`);
+
 	$: isHomePage = $page.url.pathname.startsWith(`${base}`);
 
 
@@ -79,13 +81,11 @@
 
 		window.location.replace(`${base}/login`);
 	}
-	
-
 </script>
 
-<main class="flex min-h-screen flex-col bg-gray-900 p-10">
+<main class="flex min-h-screen flex-col bg-gray-900 p-10 ">
 	<!-- Header for users alone --> 
-	{#if $user && !isLoginPage && !isInvalidPage && ($isWarehouse || $isSupplier || $isAdmin)}
+	{#if $user && !isLoginPage && !isInvalidPage && ($isWarehouse || $isAdmin ) && (!isBoxPage) && (!isSupplierPage)}
 		<div class="flex justify-between items-center w-full">
 			<div>
 				<h1 class="text-3xl text-white font-bold mb-2">
@@ -158,7 +158,7 @@
 		<slot />
 	{/if}
 
-	{#if isSupplierPage && $isSupplier}
+	{#if isSupplierPage}
 		<slot />
 	{/if}
 </main>

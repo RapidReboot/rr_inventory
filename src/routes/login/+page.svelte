@@ -45,7 +45,7 @@
         } else if (isWarehouse) {
             window.location.href = `${base}/warehouse`;
         } else if (isSupplier) {
-            window.location.href = `${base}/supplier`;
+            window.location.href = `${base}/supplier/${email}`;
         } else {
             window.location.href = `${base}/invalid`;
         }
