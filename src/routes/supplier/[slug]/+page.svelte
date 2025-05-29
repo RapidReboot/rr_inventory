@@ -333,41 +333,59 @@ const groupedShipmentHistory = derived(shipmentHistory, ($shipmentHistory) => {
     <!-- Product Container -->
     <div 
       class="w-2/3 pr-6 overflow-y-auto" 
-      style="min-height: calc(100vh - 200px);"
+      style="min-height: calc(100vh - 200px); max-height: calc(100vh - 6rem);"
       on:dragover={allowDrop}
       on:drop={handleDropToAvailable}
       role="list"
     >
-      <div>
+      <div class="h-full flex flex-col">
         <h1 class="text-3xl text-white font-bold mb-2">
             Rapid Reboot Inventory System
         </h1>
         <p class="text-lg text-white pb-2">
           Welcome, <span class="font-semibold">{$user.email}</span>
         </p>
-      </div>
-      <div class="grid grid-cols-3 gap-3">
-        {#each $availableProducts as product (product)}
-          <div
-            class="bg-gray-700 p-2 rounded-lg shadow flex flex-col items-center text-center cursor-move"
-            draggable="true"
-            on:dragstart={() => handleDragStart(product, 'available')}
-            role="listitem"
-          >
-            <img 
-              src={$productInventory[product]?.image || '/favicon.png'} 
-              alt={product}
-              class="w-full h-50 object-cover rounded mb-2"
-              draggable="false"
-            />
-            <div class="text-sm w-full flex justify-between items-center text-white">
-              <span class="truncate">{product}</span>
-              <span class="text-xs text-white/80 ml-2">
-                Short: {($productInventory[product]?.needed ?? 0) - ($productInventory[product]?.on_hand ?? 0)}
-              </span>
-            </div>
+        <div class="flex-1 overflow-y-auto">
+          <div class="grid grid-cols-3 gap-6 py-2 pl-2 pr-1">
+            {#each $availableProducts as product (product)}
+              {#if $productInventory[product]}
+                <div
+                  class="bg-gray-700 p-2 rounded-lg shadow flex flex-col items-center text-center cursor-move"
+                  draggable="true"
+                  on:dragstart={() => handleDragStart(product, 'available')}
+                  role="listitem"
+                  style="outline: 3px solid
+                    {($productInventory[product].needed - $productInventory[product].on_hand) > $productInventory[product].needed * 0.5
+                      ? 'red'
+                      : ($productInventory[product].needed - $productInventory[product].on_hand) > 0
+                      ? 'orange'
+                      : 'limegreen'}; outline-offset: 2px; min-width: 0;"
+                >
+                  <img 
+                    src={$productInventory[product]?.image || '/favicon.png'} 
+                    alt={product}
+                    class="w-full h-48 object-cover rounded mb-1"
+                    draggable="false"
+                  />
+                  <div class="text-xs w-full flex justify-between items-center text-white">
+                    <span class="truncate">{product}</span>
+                    <span class="text-xs text-white/80 ml-2">
+                      Short: {Math.max(0, ($productInventory[product]?.needed ?? 0) - ($productInventory[product]?.on_hand ?? 0))}
+                    </span>
+                  </div>
+                </div>
+              {:else}
+                <div class="bg-gray-700 p-2 rounded-md shadow flex flex-col items-center text-center cursor-move" draggable="true" on:dragstart={() => handleDragStart(product, 'available')} role="listitem">
+                  <img src="/favicon.png" alt={product} class="w-full h-32 object-cover rounded mb-1" draggable="false" />
+                  <div class="text-xs w-full flex justify-between items-center text-white">
+                    <span class="truncate">{product}</span>
+                    <span class="text-xs text-white/80 ml-2">Short: N/A</span>
+                  </div>
+                </div>
+              {/if}
+            {/each}
           </div>
-        {/each}
+        </div>
       </div>
 
       <!-- Shipment History Popup -->
@@ -461,7 +479,7 @@ const groupedShipmentHistory = derived(shipmentHistory, ($shipmentHistory) => {
   <div class="absolute top-10 right-8 flex flex-row space-x-4 items-center z-10">
     <!-- Shipment History Button -->
     <button
-      class="bg-lime-700 text-white px-4 py-2 rounded hover:bg-lime-800"
+      class="bg-lime-600 hover:bg-lime-700 text-white px-4 py-2 rounded"
       on:click={() => showHistory = true}
       type="button"
     >
@@ -535,7 +553,7 @@ const groupedShipmentHistory = derived(shipmentHistory, ($shipmentHistory) => {
         </button>
         <button
           on:click={submitShipment}
-          class="bg-lime-600 text-black px-4 py-2 rounded hover:bg-lime-700"
+          class="bg-lime-600 hover:bg-lime-700 text-black px-4 py-2 rounded"
         >
           Submit Shipment
         </button>

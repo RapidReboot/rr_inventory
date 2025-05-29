@@ -4,7 +4,6 @@
 
     let suppliers: { id: number; name: string; products: string[]; contact: string }[] = [];
     let products: { id: number; name: string, on_hand: number, needed: number }[] = [];
-    let showDropdown = false;
     let openDropdownSupplierId: number | null = null;
 
 
@@ -70,26 +69,6 @@
         if (ratio >= 0.75) return "High";
         if (ratio >= 0.5) return "Moderate";
         return "Low";
-    }
-
-    async function requestShipment(productName: string) {
-        const amount = parseInt(prompt(`How much of ${productName} would you like to request?`) || "0", 10);
-        if (isNaN(amount) || amount <= 0) {
-            alert("Invalid amount entered.");
-            return;
-        }
-
-        const { error } = await supabase
-            .from("supplier_shipment")
-            .insert([{ name: productName, amount }]);
-
-        if (error) {
-            console.error("Error requesting shipment:", error);
-            alert("Failed to request shipment.");
-            return;
-        }
-
-        alert(`Successfully requested ${amount} of ${productName}.`);
     }
 
     // Fetch suppliers and products on component load

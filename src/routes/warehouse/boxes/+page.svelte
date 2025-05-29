@@ -1,11 +1,7 @@
 <script lang="ts">
 	export let data: { boxes: { id: number; name: string; count: number;}[] };
-	import { goto } from '$app/navigation';
     import { base } from '$app/paths';
 
-	function goToBox(boxName: string) {
-		goto(`${base}/warehouse/boxes/${boxName}`);
-	}
 </script>
 
 <main class="flex flex-col bg-gray-900 p-4">
@@ -18,7 +14,7 @@
 	</div>
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6">
         {#each data.boxes as box}
-          <button class="bg-green-500 text-white rounded-lg shadow-md p-6 flex flex-col items-center hover:bg-green-600 transition" on:click={() => goToBox(box.name)}>
+          <button class="bg-green-500 text-white rounded-lg shadow-md p-6 flex flex-col items-center hover:bg-green-600 transition" on:click={() => window.open(`${base}/warehouse/boxes/${box.name}`)}>
             <h3 class="text-lg font-semibold mb-2">{box.name}</h3>
             <span class="text-2xl font-bold">{box.count}</span>
           </button>

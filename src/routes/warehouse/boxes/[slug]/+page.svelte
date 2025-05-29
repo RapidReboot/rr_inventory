@@ -127,6 +127,23 @@
     if (updateError) {
       console.error('Error updating on_hand:', updateError);
     }
+
+    // Insert a new row into box_history
+    if ($user) {
+      const { error: historyError } = await supabase
+        .from('box_history')
+        .insert({
+          account: $user?.email,
+          product: data.box.name,
+          amount: data.box.count
+        });
+      if (historyError) {
+        console.error('Error inserting into box_history:', historyError);
+      }
+    } else {
+      console.error('No user found for box_history entry.');
+    }
+
     showConfirm = false;
 
   }
@@ -159,7 +176,7 @@
           </div>
           <button
             type="submit"
-            class="w-full bg-lime-700 text-white py-2 px-4 rounded hover:bg-lime-600 focus:outline-none focus:ring-2 focus:ring-lime-500 focus:ring-offset-2"
+            class="w-full bg-lime-600 hover:bg-lime-700  text-white py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-lime-500 focus:ring-offset-2"
           >
             Login
           </button>
@@ -169,9 +186,15 @@
   {/if}
   {#if $user}
     {#if data.box}
-      <button type="button" class="w-full max-w-lg bg-lime-700 hover:bg-lime-800 text-white rounded-lg shadow-md p-16 flex flex-col items-center mt-10 cursor-pointer" on:click={handleContainerClick}>
+      <button type="button" class="w-full max-w-lg bg-lime-600 hover:bg-lime-700 text-white rounded-lg shadow-md p-16 flex flex-col items-center mt-10 cursor-pointer" on:click={handleContainerClick}>
         <h2 class="text-2xl font-bold mb-4">{data.box.name}</h2>
-        <span class="text-4xl font-bold">{data.box.count}</span>
+        <input
+          type="number"
+          class="text-4xl font-bold text-center bg-transparent border-b-2 border-lime-400 focus:outline-none focus:border-lime-600 w-32 mb-2"
+          bind:value={data.box.count}
+          min="0"
+          on:click|stopPropagation
+        />
       </button>
       {#if showConfirm}
         <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">

@@ -5,7 +5,16 @@
 	import { onMount } from 'svelte';
 
 	let inventoryLevel = 'Moderate';
-	let shipmentHistory = writable<any[]>([]);
+	interface EventHistoryRow {
+	  date: string;
+	  account: string;
+	  product: string;
+	  amount: number;
+	  tracking: string;
+	  type: 'shipment' | 'box';
+	}
+
+	let shipmentHistory = writable<EventHistoryRow[]>([]);
 
 	async function calculateInventoryLevel() {
 		const { data, error } = await supabase
@@ -42,16 +51,43 @@
 			.from('shipments')
 			.select('*')
 			.order('created_at', { ascending: false });
+
+		// Fetch all box history for event history
+		const { data: boxHistory, error: boxHistoryError } = await supabase
+			.from('box_history')
+			.select('*')
+			.order('created_at', { ascending: false });
+
+		let mergedHistory: EventHistoryRow[] = [];
 		if (!shipmentsError && shipments) {
-			shipmentHistory.set(shipments);
+			mergedHistory = shipments.map(row => ({
+				date: row.created_at,
+				account: row.supplier,
+				product: row.product,
+				amount: row.amount,
+				tracking: row.tracking_number || '',
+				type: 'shipment' as const
+			}));
 		}
+		if (!boxHistoryError && boxHistory) {
+			const boxEvents = boxHistory.map(row => ({
+				date: row.created_at,
+				account: row.account,
+				product: row.product,
+				amount: row.amount,
+				tracking: '',
+				type: 'box' as const
+			}));
+			mergedHistory = [...mergedHistory, ...boxEvents];
+		}
+		mergedHistory.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+		shipmentHistory.set(mergedHistory);
 	});
 
-	// Group shipment history by creation time (to the minute for better grouping)
 	const groupedShipmentHistory = derived(shipmentHistory, ($shipmentHistory) => {
 		const groups: Record<string, any[]> = {};
 		$shipmentHistory.forEach(row => {
-			const dateKey = row.created_at ? new Date(row.created_at).toLocaleString() : 'Unknown';
+			const dateKey = row.date ? new Date(row.date).toLocaleString() : 'Unknown';
 			if (!groups[dateKey]) groups[dateKey] = [];
 			groups[dateKey].push(row);
 		});
@@ -67,13 +103,13 @@
 			Inventory Level: {inventoryLevel}
 		</p>
 		<div class="grid grid-cols-3 gap-2 mt-3 place-items-center w-full">
-			<a href="{base}/suppliers" class="w-full h-40 bg-lime-700 hover:bg-lime-800 text-white font-bold text-xl py-4 px-6 rounded flex justify-center items-center">
+			<a href="{base}/suppliers" class="w-full h-40 bg-lime-600 hover:bg-lime-700 text-white font-bold text-xl py-4 px-6 rounded flex justify-center items-center">
 				Suppliers
 			</a>
-			<a href="{base}/products" class="w-full h-40 bg-lime-700 hover:bg-lime-800 text-white font-bold text-xl py-4 px-6 rounded flex justify-center items-center">
+			<a href="{base}/products" class="w-full h-40 bg-lime-600 hover:bg-lime-700 text-white font-bold text-xl py-4 px-6 rounded flex justify-center items-center">
 				Products
 			</a>
-			<a href="{base}/warehouse" class="w-full h-40 bg-lime-700 hover:bg-lime-800 text-white font-bold text-xl py-4 px-6 rounded flex justify-center items-center">
+			<a href="{base}/warehouse" class="w-full h-40 bg-lime-600 hover:bg-lime-700 text-white font-bold text-xl py-4 px-6 rounded flex justify-center items-center">
 				Warehouse
 			</a>
 		</div>
@@ -86,7 +122,7 @@
 					<thead>
 						<tr>
 							<th class="text-left font-semibold pb-1">Date</th>
-							<th class="text-left font-semibold pb-1">Supplier</th>
+							<th class="text-left font-semibold pb-1">Account</th>
 							<th class="text-left font-semibold pb-1">Product</th>
 							<th class="text-left font-semibold pb-1">Amount</th>
 							<th class="text-left font-semibold pb-1">Tracking #</th>
@@ -104,11 +140,11 @@
 									{#if i === 0}
 										<td class="py-1" rowspan={group.rows.length}>{group.date}</td>
 									{/if}
-									<td class="pr-2 py-1">{row.supplier}</td>
+									<td class="pr-2 py-1">{row.account}</td>
 									<td class="pr-2 py-1">{row.product}</td>
 									<td class="pr-2 py-1">{row.amount}</td>
 									{#if i === 0}
-										<td class="py-1" rowspan={group.rows.length}>{row.tracking_number}</td>
+										<td class="py-1" rowspan={group.rows.length}>{row.tracking}</td>
 									{/if}
 								</tr>
 							{/each}

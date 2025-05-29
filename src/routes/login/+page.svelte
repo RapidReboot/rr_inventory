@@ -82,7 +82,7 @@
         </div>
         <button
             type="submit"
-            class="w-full bg-lime-700 text-white py-2 px-4 rounded hover:bg-lime-600 focus:outline-none focus:ring-2 focus:ring-lime-500 focus:ring-offset-2"
+            class="w-full bg-lime-600 hover:bg-lime-700 text-white py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-lime-500 focus:ring-offset-2"
         >
             Login
         </button>

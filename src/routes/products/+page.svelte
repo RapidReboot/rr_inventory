@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { base } from '$app/paths';
+
 
 	import { supabase } from '$lib/supabase';
 
@@ -193,12 +195,22 @@
 					Boxes
 				</button>
 			</div>
-			<button
-				class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-				on:click={handleAdd}
-			>
-				{showBoxes ? 'Add Box' : 'Add Product'}
-			</button>
+			<div class="flex gap-2">
+				<button
+					class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+					on:click={handleAdd}
+				>
+					{showBoxes ? 'Add Box' : 'Add Product'}
+				</button>
+				{#if showBoxes}
+					<button
+						class="ml-2 bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+						on:click={() => window.location.href = `${base}/warehouse/boxes`}
+					>
+						All Current Boxes
+					</button>
+				{/if}
+			</div>
 		</div>
 		{#if showBoxes}
 			<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6">
@@ -316,8 +328,8 @@
 								rows="2"
 							></textarea>
 
-							<label for="group-products-{product.id}" class="text-sm font-semibold">Group Products</label>
-							<div class="flex gap-2">
+							<!-- <label for="group-products-{product.id}" class="text-sm font-semibold">Group Products</label> -->
+							<!-- <div class="flex gap-2">
 								<select
 									class="border p-1"
 									on:change={(e) => {
@@ -343,15 +355,15 @@
 										{/if}
 									{/each}
 								</select>
-				<input
-			id="group-products-{product.id}"
-			type="text"
-			class="border p-1 w-full"
-			value={product.group_products.filter(item => item.trim() !== "").join(", ")}
-			readonly
-			placeholder="products"
-		/>
-							</div>
+								<input
+								id="group-products-{product.id}"
+								type="text"
+								class="border p-1 w-full"
+								value={product.group_products.filter(item => item.trim() !== "").join(", ")}
+								readonly
+								placeholder="products"
+								/>
+							</div> -->
 
 							<div class="flex gap-2">
 								<div class="flex-col justify-center">

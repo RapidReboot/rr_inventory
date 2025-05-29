@@ -107,7 +107,7 @@
 					<form action={`${base}/accounts`}>
 						<button
 							type="submit"
-							class="bg-lime-700 hover:bg-lime-800 text-white font-bold py-2 px-4 rounded"
+							class="bg-lime-600 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded"
 						>
 							Permissions
 						</button>
