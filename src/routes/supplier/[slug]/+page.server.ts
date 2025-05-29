@@ -28,5 +28,3 @@ export const entries: EntryGenerator = async () => {
     }
     return (supplier || []).map(supplier => ({ slug: supplier.name }));
 };
-
-export const prerender = false;
