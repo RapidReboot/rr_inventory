@@ -283,6 +283,22 @@ const groupedShipmentHistory = derived(shipmentHistory, ($shipmentHistory) => {
   });
   return Object.entries(groups).map(([date, rows]) => ({ date, rows }));
 });
+
+// --- Server-side load logic moved from +page.server.ts ---
+export async function load({ params }: { params: { slug: string } }) {
+  const { slug } = params;
+  const { data: supplier, error } = await supabase
+    .from('suppliers')
+    .select()
+    .eq('name', slug)
+    .single();
+
+  if (error) {
+    console.error('Supabase error:', error);
+  }
+
+  return { supplier };
+}
 </script>
 
 <main class="flex bg-gray-900 text-white relative">
