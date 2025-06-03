@@ -80,6 +80,7 @@
 			return;
 		}
 
+		// Remove product from group_products in other products
 		const updatedProducts = data.products.map(product => {
 			if (product.group_products.includes(data.products.find(p => p.id === id)?.name || "")) {
 				const updatedGroupProducts = product.group_products.filter(name => name !== data.products.find(p => p.id === id)?.name);
@@ -88,6 +89,25 @@
 			}
 			return product;
 		});
+
+		// Remove product from suppliers' products array
+		const deletedProduct = data.products.find(p => p.id === id);
+		if (deletedProduct) {
+			const { data: suppliers, error: supplierError } = await supabase.from("suppliers").select("id, products");
+			if (supplierError) {
+				console.error("Error fetching suppliers:", supplierError);
+			} else if (suppliers) {
+				for (const supplier of suppliers) {
+					if (Array.isArray(supplier.products) && supplier.products.includes(deletedProduct.name)) {
+						const updatedSupplierProducts = supplier.products.filter((prod: string) => prod !== deletedProduct.name);
+						const { error: updateSupplierError } = await supabase.from("suppliers").update({ products: updatedSupplierProducts }).eq("id", supplier.id);
+						if (updateSupplierError) {
+							console.error(`Error updating supplier ${supplier.id}:`, updateSupplierError);
+						}
+					}
+				}
+			}
+		}
 
 		data.products = updatedProducts.filter(product => product.id !== id);
 	}
