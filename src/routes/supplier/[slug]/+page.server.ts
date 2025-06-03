@@ -1,6 +1,6 @@
 import { supabase } from "$lib/supabase";
 
-import type { EntryGenerator } from './$types';
+import type { EntryGenerator, PageServerLoad } from './$types';
 
 export const entries: EntryGenerator = async () => {
     const { data: supplier, error } = await supabase

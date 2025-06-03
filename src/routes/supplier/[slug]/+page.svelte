@@ -1,19 +1,19 @@
 <script lang="ts">
   import type { User } from '@supabase/supabase-js';
 	import { onMount } from 'svelte';
-  import { writable, derived } from 'svelte/store';
+  import { writable, derived, get } from 'svelte/store';
   import { supabase } from '$lib/supabase';
 	import { base } from '$app/paths';
 	import { page } from '$app/stores';
-  export let data: {
-    supplier: { id: number; name: string; products: string[]; contact: string; };
-  };
+
+  // Dynamically load supplier data based on params (slug)
+  let supplier = writable<{ id: number; name: string; products: string[]; contact: string; } | null>(null);
 
   let productInventory = writable<Record<string, { on_hand: number; needed: number; image: string; weight: number;}>>({});
 	let user = writable<User | null>(null);
 	let isAdmin = writable(false);
   let shipmentHistory = writable<any[]>([]);
-  let availableProducts = writable([...data.supplier.products]);
+  let availableProducts = writable<string[]>([]);
   let cartProducts = writable<string[]>([]);
   let dragItem: string | null = null;
   let dragOrigin: 'available' | 'cart' | null = null;
@@ -25,6 +25,23 @@
 
 
   onMount(async () => {
+    // Get slug from $page store
+    const slug = get(page).params.slug;
+    if (!slug) return;
+    const { data: supplierData, error: supplierError } = await supabase
+      .from('suppliers')
+      .select()
+      .eq('name', slug)
+      .single();
+    if (supplierError) {
+      console.error('Supabase error:', supplierError);
+      supplier.set(null);
+      availableProducts.set([]);
+    } else {
+      supplier.set(supplierData);
+      availableProducts.set(supplierData.products || []);
+    }
+
     const {
       data: { session },
       error: sessionError
@@ -66,12 +83,12 @@
 			fetchRoles();
 		}
     
-    const { data: products, error } = await supabase
+    const { data: products, error: productsError } = await supabase
     .from('products')
     .select('name, on_hand, needed, image, weight');
 
-    if (error || !products || !Array.isArray(products)) {
-      console.error('Failed to load inventory:', error?.message || 'No products found');
+    if (productsError || !products || !Array.isArray(products)) {
+      console.error('Failed to load inventory:', productsError?.message || 'No products found');
         return;
   }
 
@@ -89,13 +106,16 @@
   productInventory.set(inventoryMap);
 
   // Fetch shipment history for this supplier
-  const { data: shipments, error: shipmentsError } = await supabase
-    .from('shipments')
-    .select('*')
-    .eq('supplier', data.supplier.name)
-    .order('created_at', { ascending: false });
-  if (!shipmentsError && shipments) {
-    shipmentHistory.set(shipments);
+  const currentSupplier = get(supplier);
+  if (currentSupplier) {
+    const { data: shipments, error: shipmentsError } = await supabase
+      .from('shipments')
+      .select('*')
+      .eq('supplier', currentSupplier.name)
+      .order('created_at', { ascending: false });
+    if (!shipmentsError && shipments) {
+      shipmentHistory.set(shipments);
+    }
   }
   });
 
@@ -216,14 +236,14 @@
   function submitShipment() {
     let cartSnapshot: string[] = [];
     let inventorySnapshot: Record<string, { on_hand: number; needed: number; image: string; weight: number }> = {};
-    // Get current cart and inventory values
     cartProducts.subscribe(cart => { cartSnapshot = cart; })();
     productInventory.subscribe(inv => { inventorySnapshot = inv; })();
-
-    // Collect amounts from the number inputs
-    // We'll use the DOM to get the current values
+    const currentSupplier = get(supplier);
+    if (!currentSupplier) {
+      alert('No supplier loaded.');
+      return;
+    }
     const shipmentRows = cartSnapshot.map(product => {
-      // Find the input for this product
       const input = document.querySelector(
         `input[aria-label=\"Quantity for ${product}\"]`
       ) as HTMLInputElement | null;
@@ -231,12 +251,11 @@
       if (input) {
         amount = parseInt(input.value, 10) || 0;
       } else {
-        // fallback to calculated value
         const inv = inventorySnapshot[product] || { needed: 0, on_hand: 0 };
         amount = (inv.needed ?? 0) - (inv.on_hand ?? 0);
       }
       return {
-        supplier: data.supplier.name,
+        supplier: currentSupplier.name,
         product,
         amount,
         tracking_number: 0
@@ -285,20 +304,6 @@ const groupedShipmentHistory = derived(shipmentHistory, ($shipmentHistory) => {
 });
 
 // --- Server-side load logic moved from +page.server.ts ---
-export async function load({ params }: { params: { slug: string } }) {
-  const { slug } = params;
-  const { data: supplier, error } = await supabase
-    .from('suppliers')
-    .select()
-    .eq('name', slug)
-    .single();
-
-  if (error) {
-    console.error('Supabase error:', error);
-  }
-
-  return { supplier };
-}
 </script>
 
 <main class="flex bg-gray-900 text-white relative">
