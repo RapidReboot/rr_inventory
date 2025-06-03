@@ -4,16 +4,18 @@ Welcome to the Rapid Reboot Inventory System
 
 ## Getting Started
 
-First thing we need to do is create products for everything that we will want to be shipping.
+1. Create products for everything that we will want to be shipping.
 
-After all of the products are created, go through and add the photos and how many you have on hand as well as how many you need.
+2. Go through and add the photos and how many you have on hand as well as how many you need.
 
-Go to the suppliers tab and also add in all the suppliers (this will be used to add more products in the future).
+3. Navigate to the suppliers page and set all the different products to the correct supplier. Each supplier will be able to submit more products and update the "on hand" number. 
 
-Add in a warehouse account in the Supabase Auth. Using the same email, add an account in the accounts site and set the permissions.
+4. create accounts in Supabase AND in the permissions page in the website.
 
-## Upcoming Updates
+(NOTE: When creating supplier accounts USE EMAILS THAT END WITH THE SUPPLIER NAME. For example, examplesupplier@Suppliername.com. @gmail.com, hotmail, and other account names will not work.)
 
-1. Adding in a faster way to scan products
-2. Automate the Admin to Supplier email request system.
-3. Adding in event logs.
+## Upcoming Changes
+
+Automatic supplier email alerts.
+Event history filters.
+Image to url creation tool.
