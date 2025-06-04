@@ -318,7 +318,7 @@ const groupedShipmentHistory = derived(shipmentHistory, ($shipmentHistory) => {
                 type="text"
                 id="email"
                 bind:value={email}
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-lime-500 focus:border-lime-500"
+                class="mt-1 block w-full px-3 py-2 border text-gray-700 border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-lime-500 focus:border-lime-500"
                 placeholder="Enter your email"
             />
         </div>
@@ -328,7 +328,7 @@ const groupedShipmentHistory = derived(shipmentHistory, ($shipmentHistory) => {
                 type="password"
                 id="password"
                 bind:value={password}
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-lime-500 focus:border-lime-500"
+                class="mt-1 block w-full px-3 py-2 border text-gray-700 border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-lime-500 focus:border-lime-500"
                 placeholder="Enter your password"
             />
           </div>
@@ -349,7 +349,7 @@ const groupedShipmentHistory = derived(shipmentHistory, ($shipmentHistory) => {
     const urlDomain = url.split('/').filter(Boolean).pop()?.split('.')[0]?.toLowerCase();
     // Extract domain from email (between @ and .)
     const emailDomain = $user.email?.split('@')[1]?.split('.')[0]?.toLowerCase();
-    return (urlDomain && emailDomain && urlDomain === emailDomain) || isAdmin;
+    return (urlDomain && emailDomain && urlDomain === emailDomain) || $isAdmin;
   })()}
     <!-- Product Container -->
     <div 

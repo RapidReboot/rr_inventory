@@ -8,11 +8,24 @@ Welcome to the Rapid Reboot Inventory System
 
 2. Go through and add the photos and how many you have on hand as well as how many you need.
 
-3. Navigate to the suppliers page and set all the different products to the correct supplier. Each supplier will be able to submit more products and update the "on hand" number. 
+3. Navigate to the suppliers page and set all the different products to the correct supplier.
+Each supplier will be able to submit more products and update the "on hand" number. 
 
 4. create accounts in Supabase AND in the permissions page in the website.
 
-(NOTE: When creating supplier accounts USE EMAILS THAT END WITH THE SUPPLIER NAME. For example, examplesupplier@Suppliername.com. @gmail.com, hotmail, and other account names will not work.)
+Supplier Creation Notes: 
+
+When creating supplier accounts USE EMAILS THAT END WITH THE SUPPLIER NAME. For example, examplesupplier@Suppliername.com. @gmail.com, hotmail, and other account names will not work.
+
+All supplier names must be lowercase and no spaces.
+
+Due to Github only allowing static site Generation you will need to create all of the suppliers on your own localhost.
+After creating new supplier pages commit the changes to this repository so that Github can rebuild the website with the new pages pre-rendered.
+
+Contact:
+Cameron Johnson
+cajoro935@gmail.com
+(385)-219-9800
 
 ## Upcoming Changes
 

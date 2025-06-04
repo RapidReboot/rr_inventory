@@ -44,6 +44,10 @@
         id: number,
         updatedFields: { name?: string; products?: string[]; contact?: string }
     ) {
+        // Lowercase the name if it is being updated
+        if (updatedFields.name) {
+            updatedFields.name = updatedFields.name.toLowerCase();
+        }
         const { error } = await supabase.from("suppliers").update(updatedFields).eq("id", id);
         if (error) {
             console.error("Error updating supplier:", error);

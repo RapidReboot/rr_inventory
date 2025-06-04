@@ -45,7 +45,16 @@
         } else if (isWarehouse) {
             window.location.href = `${base}/warehouse`;
         } else if (isSupplier) {
-            window.location.href = `${base}/supplier/${email}`;
+            // Extract the part between '@' and '.com' for supplier route
+            let username = '';
+            const atIdx = email.indexOf('@');
+            const dotIdx = email.lastIndexOf('.com');
+            if (atIdx !== -1 && dotIdx !== -1 && dotIdx > atIdx) {
+                username = email.substring(atIdx + 1, dotIdx);
+            } else {
+                username = email;
+            }
+            window.location.href = `${base}/supplier/${username}`;
         } else {
             window.location.href = `${base}/invalid`;
         }
