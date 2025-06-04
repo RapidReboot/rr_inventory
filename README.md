@@ -4,6 +4,9 @@ Welcome to the Rapid Reboot Inventory System
 
 ## Getting Started
 
+Due to Github only allowing static site Generation you will need to create all of the suppliers as well as the boxes on your own localhost.
+After creating new supplier pages commit the changes to this repository so that Github can rebuild the website with the new pages pre-rendered.
+
 1. Create products for everything that we will want to be shipping.
 
 2. Go through and add the photos and how many you have on hand as well as how many you need.
@@ -19,16 +22,18 @@ When creating supplier accounts USE EMAILS THAT END WITH THE SUPPLIER NAME. For 
 
 All supplier names must be lowercase and no spaces.
 
-Due to Github only allowing static site Generation you will need to create all of the suppliers on your own localhost.
-After creating new supplier pages commit the changes to this repository so that Github can rebuild the website with the new pages pre-rendered.
-
 Contact:
+
 Cameron Johnson
+
 cajoro935@gmail.com
+
 (385)-219-9800
 
 ## Upcoming Changes
 
 Automatic supplier email alerts.
+
 Event history filters.
+
 Image to url creation tool.
