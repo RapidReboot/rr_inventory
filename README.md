@@ -37,3 +37,7 @@ Automatic supplier email alerts.
 Event history filters.
 
 Image to url creation tool.
+
+## Update Log
+
+June 9 2025: Added Test Products
