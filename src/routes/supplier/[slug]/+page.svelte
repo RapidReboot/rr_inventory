@@ -311,6 +311,12 @@ const groupedShipmentHistory = derived(shipmentHistory, ($shipmentHistory) => {
     <div class="fixed inset-0 bg-opacity-60 flex items-center justify-center z-50">
       <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative">
      <h1 class="text-2xl font-bold text-black mb-6 text-center">Rapid Reboot Inventory</h1>
+         {#if error}
+    <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
+        {error}
+    </div>
+    {/if}
+
         <form on:submit|preventDefault={handleLogin} class="space-y-4">
           <div>
             <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
@@ -555,8 +561,12 @@ const groupedShipmentHistory = derived(shipmentHistory, ($shipmentHistory) => {
                   type="number"
                   min="0"
                   class="ml-2 w-16 text-black rounded px-1 py-0.5 border border-gray-400 focus:outline-none focus:ring-2 bg-white"
-                  value={($productInventory[product]?.needed ?? 0) - ($productInventory[product]?.on_hand ?? 0)}
+                  value={Math.max(0, ($productInventory[product]?.needed ?? 0) - ($productInventory[product]?.on_hand ?? 0))}
                   aria-label="Quantity for {product}"
+                  on:input={(e) => {
+                    const input = e.target as HTMLInputElement;
+                    if (input.valueAsNumber < 0) input.value = '0';
+                  }}
                 />
               </div>
             </div>

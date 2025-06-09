@@ -11,8 +11,7 @@ After creating new supplier pages commit the changes to this repository so that 
 
 2. Go through and add the photos and how many you have on hand as well as how many you need.
 
-3. Navigate to the suppliers page and set all the different products to the correct supplier.
-Each supplier will be able to submit more products and update the "on hand" number. 
+3. Navigate to the suppliers page and set all the different products to the correct supplier. Each supplier will be able to submit more products and update the "on hand" number. 
 
 4. create accounts in Supabase AND in the permissions page in the website.
 
